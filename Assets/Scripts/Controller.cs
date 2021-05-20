@@ -52,7 +52,7 @@ public class Controller : MonoBehaviour
         if (tipo == 'C')
             cubo.GetComponentInChildren<Renderer>().material.color = Color.black;
         if (tipo == 'S')
-            cubo.GetComponentInChildren<Renderer>().material.color = Color.blue;
+            cubo.GetComponentInChildren<Renderer>().material.color = Color.green;
     }
 
     /*
@@ -153,22 +153,7 @@ public class Controller : MonoBehaviour
                 Casa[] dupla = new Casa[2];
                 dupla[0] = nodos[z, x];
 
-                Casa temp = nodos[doisCima, doisEsq];
-                if (temp.getTipo() != 'x')
-                {
-                    dupla[1] = temp;
-                    arrestas.Add(dupla);
-                }
-
-                //erro
-                temp = nodos[doisCima, umEsq];
-                if (temp.getTipo() != 'x')
-                {
-                    dupla[1] = temp;
-                    arrestas.Add(dupla);
-                }
-
-                temp = nodos[umCima, umEsq];
+                Casa temp = nodos[doisCima, umEsq];
                 if (temp.getTipo() != 'x')
                 {
                     dupla[1] = temp;
@@ -181,17 +166,54 @@ public class Controller : MonoBehaviour
                     dupla[1] = temp;
                     arrestas.Add(dupla);
                 }
+
+                temp = nodos[doisCima, umDir];
+                if (temp.getTipo() != 'x')
+                {
+                    dupla[1] = temp;
+                    arrestas.Add(dupla);
+                }
+
+                temp = nodos[umCima, doisDir];
+                if (temp.getTipo() != 'x')
+                {
+                    dupla[1] = temp;
+                    arrestas.Add(dupla);
+                }
+
+                temp = nodos[umBaixo, doisEsq];
+                if (temp.getTipo() != 'x')
+                {
+                    dupla[1] = temp;
+                    arrestas.Add(dupla);
+                }
+
+                temp = nodos[doisBaixo, umEsq];
+                if (temp.getTipo() != 'x')
+                {
+                    dupla[1] = temp;
+                    arrestas.Add(dupla);
+                }
+
+                temp = nodos[doisBaixo, umDir];
+                if (temp.getTipo() != 'x')
+                {
+                    dupla[1] = temp;
+                    arrestas.Add(dupla);
+                }
+
+                temp = nodos[umBaixo, doisDir];
+                if (temp.getTipo() != 'x')
+                {
+                    dupla[1] = temp;
+                    arrestas.Add(dupla);
+                }
             }
         }
     }
-           /*
-            * Cada casa deve apontar para o equivalente aos "A"s 
-            *   doisEsq umEsq umDir doisDir
-            * . . A . A . . doisCima
-            * . A . . . A . umCima
-            * . . . C . . . 
-            * . A . . . A . umBaixo
-            * . . A . A . . doisBaixo
-            */
+          
+
+
+
 
 }
