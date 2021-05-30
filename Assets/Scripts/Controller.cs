@@ -251,8 +251,7 @@ public class Controller : MonoBehaviour
 
         foreach (Casa vertice in nodos)
         {
-            int existeArresta = Array.IndexOf(new Casa[] { inicial, vertice}, arrestas); // descobrir como fazer a comparação se existe a arresta
-            if (existeArresta > 1)
+            if (existeArresta(inicial, vertice))
             {
                 if (caminhamentoLargura(vertice, final, jaConheco))
                 {
@@ -264,6 +263,25 @@ public class Controller : MonoBehaviour
         return false;
     }
 
-
+    private Boolean existeArresta(Casa verticeSaida, Casa verticeDestino) 
+    {
+        foreach (Casa[] arresta in arrestas) 
+        {
+            if (verticeSaida.getPos().x == arresta[0].getPos().x) 
+            {
+                if (verticeSaida.getPos().z == arresta[0].getPos().z) 
+                {
+                    if (verticeDestino.getPos().x == arresta[1].getPos().x)
+                    {
+                        if (verticeDestino.getPos().z == arresta[1].getPos().z)
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
 
 }
