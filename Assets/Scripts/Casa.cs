@@ -7,6 +7,7 @@ public class Casa
 
     private Vector3 pos;
     private char tipo; // . C x S
+    GameObject cubo;
 
     /*
      * Cada casa deve apontar para o equivalente aos "A"s 
@@ -23,6 +24,7 @@ public class Casa
     {
         this.tipo = tipo;
         this.pos = pos;
+        this.cubo = GameObject.CreatePrimitive(PrimitiveType.Cube);
     }
 
     public Vector3 getPos()
@@ -35,6 +37,15 @@ public class Casa
         return tipo;
     }
 
+    public void setCubo(GameObject cubo)
+    {
+        this.cubo = cubo;
+    }
+
+    public void jaConheco()
+    {
+        cubo.GetComponentInChildren<Renderer>().material.color = Color.yellow;
+    }
 
 
 
