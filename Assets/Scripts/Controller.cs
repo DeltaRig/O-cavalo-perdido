@@ -15,11 +15,14 @@ public class Controller : MonoBehaviour
     Vector3 cavalo;
     Vector3 saida;
 
+    int x = 0;
+
 
 
     // Start is called before the first frame update
     void Start()
     {
+
         this.linhas = System.IO.File.ReadAllLines(@".\Assets\Casos\caso50.txt");
         GeraListaCasas();
         arrestas = new HashSet<Casa[]>();
@@ -27,7 +30,8 @@ public class Controller : MonoBehaviour
         List<Casa> jaConheco = new List<Casa>();
         Debug.Log("Cavalo " + cavalo);
         Debug.Log("Saida " + saida);
-        caminhamentoLargura(nodos[(int)cavalo.z, (int) cavalo.x], nodos[(int)saida.z, (int)cavalo.x], jaConheco);
+        caminhamentoLargura(nodos[(int)cavalo.z, (int)cavalo.x], nodos[(int)saida.z, (int)cavalo.x], jaConheco);
+
     }
 
     void GeraListaCasas()
@@ -45,7 +49,7 @@ public class Controller : MonoBehaviour
             {
                 Casa c = new Casa(new Vector3(x, 0, z), linhas[z][x]);
                 //casas[i] = c;
-                nodos[z,x] = c; 
+                nodos[z, x] = c;
                 CreateCubes(new Vector3(x, 0, z), linhas[z][x]);
 
                 i++;
@@ -58,8 +62,8 @@ public class Controller : MonoBehaviour
         GameObject cubo = GameObject.CreatePrimitive(PrimitiveType.Cube);
         cubo.transform.position = pos;
         cubo.transform.parent = this.transform;
-        
-        if(tipo == 'x')
+
+        if (tipo == 'x')
             cubo.GetComponentInChildren<Renderer>().material.color = Color.red;
         if (tipo == 'C')
         {
@@ -135,135 +139,181 @@ public class Controller : MonoBehaviour
             {
                 // se o nodo for x ele nem precisa gerar os caminhos
                 //if (nodos[z,x].getTipo() != 'x')
-               // {
-                    int doisCima = z + 2;
-                    int umCima = z + 1;
-                    // z vai ate linhas.length - 1 
-                    // linhas.length -1 +2 = l.l+1
-                    if (doisCima >= linhas.Length)
+                // {
+                int doisCima = z + 2;
+                int umCima = z + 1;
+                // z vai ate linhas.length - 1 
+                // linhas.length -1 +2 = l.l+1
+                if (doisCima >= linhas.Length)
+                {
+                    if (doisCima == linhas.Length)
                     {
-                        if (doisCima == linhas.Length)
-                        {
-                            doisCima = 0;
-                        }
-                        else if (doisCima == linhas.Length + 1)
-                        {
-                            doisCima = 1;
-                            umCima = 0;
-                        }
+                        doisCima = 0;
                     }
-
-                    int doisBaixo = z - 2;
-                    int umBaixo = z - 1;
-                    // z começa em 0
-                    // 0 -2 = -2
-                    if (doisBaixo < 0)
+                    else if (doisCima == linhas.Length + 1)
                     {
-                        if (doisBaixo == 0)
-                        {
-                            umBaixo = linhas.Length - 1;
-                        }
-                        else if (doisBaixo == -1)
-                        {
-                            doisBaixo = linhas.Length - 1;
-                        }
-                        else if (doisBaixo == -2)
-                        {
-                            doisBaixo = linhas.Length - 2;
-                            umBaixo = linhas.Length - 1;
-                        }
+                        doisCima = 1;
+                        umCima = 0;
                     }
+                }
 
-                    //Debug.Log(z + "\nDoisCima: " + doisCima + "\tUmCima: " + umCima
-                    //    + "\nDoisBaixo: " + doisBaixo + "\tUmBaixo: " + umBaixo);
-
-                    //verificar se é x
-
-                    Casa[] dupla = new Casa[2];
-                    dupla[0] = nodos[z, x];
-
-                    Casa temp = nodos[doisCima, umEsq];
-                    if (temp.getTipo() != 'x')
+                int doisBaixo = z - 2;
+                int umBaixo = z - 1;
+                // z começa em 0
+                // 0 -2 = -2
+                if (doisBaixo < 0)
+                {
+                    if (doisBaixo == 0)
                     {
-                        dupla[1] = temp;
-                        arrestas.Add(dupla);
+                        umBaixo = linhas.Length - 1;
                     }
-
-                    temp = nodos[umCima, doisEsq];
-                    if (temp.getTipo() != 'x')
+                    else if (doisBaixo == -1)
                     {
-                        dupla[1] = temp;
-                        arrestas.Add(dupla);
+                        doisBaixo = linhas.Length - 1;
                     }
-
-                    temp = nodos[doisCima, umDir];
-                    if (temp.getTipo() != 'x')
+                    else if (doisBaixo == -2)
                     {
-                        dupla[1] = temp;
-                        arrestas.Add(dupla);
+                        doisBaixo = linhas.Length - 2;
+                        umBaixo = linhas.Length - 1;
                     }
+                }
 
-                    temp = nodos[umCima, doisDir];
-                    if (temp.getTipo() != 'x')
-                    {
-                        dupla[1] = temp;
-                        arrestas.Add(dupla);
-                    }
+                //Debug.Log(z + "\nDoisCima: " + doisCima + "\tUmCima: " + umCima
+                //    + "\nDoisBaixo: " + doisBaixo + "\tUmBaixo: " + umBaixo);
 
-                    temp = nodos[umBaixo, doisEsq];
-                    if (temp.getTipo() != 'x')
-                    {
-                        dupla[1] = temp;
-                        arrestas.Add(dupla);
-                    }
+                //verificar se é x
 
-                    temp = nodos[doisBaixo, umEsq];
-                    if (temp.getTipo() != 'x')
-                    {
-                        dupla[1] = temp;
-                        arrestas.Add(dupla);
-                    }
+                Casa[] dupla = new Casa[2];
+                dupla[0] = nodos[z, x];
 
-                    temp = nodos[doisBaixo, umDir];
-                    if (temp.getTipo() != 'x')
-                    {
-                        dupla[1] = temp;
-                        arrestas.Add(dupla);
-                    }
+                Casa temp = nodos[doisCima, umEsq];
+                if (temp.getTipo() != 'x')
+                {
+                    dupla[1] = temp;
+                    arrestas.Add(dupla);
+                }
 
-                    temp = nodos[umBaixo, doisDir];
-                    if (temp.getTipo() != 'x')
-                    {
-                        dupla[1] = temp;
-                        arrestas.Add(dupla);
-                    }
-               // }
+                temp = nodos[umCima, doisEsq];
+                if (temp.getTipo() != 'x')
+                {
+                    dupla[1] = temp;
+                    arrestas.Add(dupla);
+                }
+
+                temp = nodos[doisCima, umDir];
+                if (temp.getTipo() != 'x')
+                {
+                    dupla[1] = temp;
+                    arrestas.Add(dupla);
+                }
+
+                temp = nodos[umCima, doisDir];
+                if (temp.getTipo() != 'x')
+                {
+                    dupla[1] = temp;
+                    arrestas.Add(dupla);
+                }
+
+                temp = nodos[umBaixo, doisEsq];
+                if (temp.getTipo() != 'x')
+                {
+                    dupla[1] = temp;
+                    arrestas.Add(dupla);
+                }
+
+                temp = nodos[doisBaixo, umEsq];
+                if (temp.getTipo() != 'x')
+                {
+                    dupla[1] = temp;
+                    arrestas.Add(dupla);
+                }
+
+                temp = nodos[doisBaixo, umDir];
+                if (temp.getTipo() != 'x')
+                {
+                    dupla[1] = temp;
+                    arrestas.Add(dupla);
+                }
+
+                temp = nodos[umBaixo, doisDir];
+                if (temp.getTipo() != 'x')
+                {
+                    dupla[1] = temp;
+                    arrestas.Add(dupla);
+                }
+                // }
             }
         }
     }
-          
-    private Boolean caminhamentoLargura(Casa inicial, Casa final, List<Casa> jaConheco)
+
+    private Boolean caminhamentoLargura(Casa casaInicial, Casa casaFinal, List<Casa> casasConhecida)
     {
-        jaConheco.Add(inicial);
-        inicial.jaConheco();
-        Thread.Sleep(100);
+        if (casaInicial == casaFinal)
+        {  
+            return true;
+        }
 
+        casasConhecida.Add(casaInicial);    // adiciona na lista
+        casaInicial.jaConheco();
+        Debug.Log(casaInicial);
 
-        foreach (Casa vertice in nodos)
+        foreach (Casa casa in nodos)
         {
-            int existeArresta = Array.IndexOf(new Casa[] { inicial, vertice}, arrestas); // descobrir como fazer a comparação se existe a arresta
-            if (existeArresta > 1)
+            if (!existeNodo(casasConhecida, casa))
             {
-                if (caminhamentoLargura(vertice, final, jaConheco))
+                if (existeArresta(casaInicial, casa))
                 {
-                    return true;
+                    if (caminhamentoLargura(casa, casaFinal, casasConhecida))
+                    {
+                        Debug.Log("achei algo");
+                        return true;
+                    }
                 }
             }
+
         }
-        Debug.Log("Não tem caminho");
+        x++;
+        //Debug.Log("Não tem caminho" + x);
         return false;
     }
 
+    private Boolean existeArresta(Casa casaSaida, Casa casaDestino)
+    {
+        foreach (Casa[] casa in arrestas)
+        {
+            if (casaSaida.getPos().x == casa[0].getPos().x)
+            {
+                if (casaSaida.getPos().z == casa[0].getPos().z)
+                {
+                    if (casaDestino.getPos().x == casa[1].getPos().x)
+                    {
+                        if (casaDestino.getPos().z == casa[1].getPos().z)
+                        {
+                            Debug.Log("Aresta encontrada");
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
 
+    private Boolean existeNodo(List<Casa> casasConhecidas, Casa casa)
+    {
+
+        foreach (Casa c in casasConhecidas)
+        {
+            if (c.getPos().x == casa.getPos().x)
+            {
+                if (c.getPos().z == casa.getPos().z)
+                {
+                    return true;
+                    Debug.Log("Square encontrado");
+                }
+            }
+        }
+        return false;
+    }
 
 }

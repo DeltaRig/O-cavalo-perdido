@@ -7,7 +7,7 @@ public class Casa
 
     private Vector3 pos;
     private char tipo; // . C x S
-    GameObject cubo;
+    protected GameObject cubo;
 
     /*
      * Cada casa deve apontar para o equivalente aos "A"s 
@@ -24,7 +24,6 @@ public class Casa
     {
         this.tipo = tipo;
         this.pos = pos;
-        this.cubo = GameObject.CreatePrimitive(PrimitiveType.Cube);
     }
 
     public Vector3 getPos()
@@ -50,7 +49,8 @@ public class Casa
 
 
 
-    public override string ToString(){
+    public override string ToString()
+    {
         string aux = "Existo " + pos + " e do tipo " + tipo;
         return aux;
     }
