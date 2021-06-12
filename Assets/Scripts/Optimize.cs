@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using UnityEngine;
 
-public class Controller : MonoBehaviour
+public class Optimize : MonoBehaviour
 {
     string[] linhas;
     //Casa[] casas;   // lista de nodos
@@ -20,17 +21,24 @@ public class Controller : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Stopwatch sw = new Stopwatch();
+        sw.Start();
+        for (int test = 50; test >= 100; test += 50)
+        {
+            sw.Restart();
+            this.linhas = System.IO.File.ReadAllLines(@".\Assets\Casos\caso"+ test +".txt");
+            GeraListaCasas();
+            arrestas = new HashSet<Casa[]>();
+            GeraArrestas();
 
-        this.linhas = System.IO.File.ReadAllLines(@".\Assets\Casos\caso0.txt");
-        GeraListaCasas();
-        arrestas = new HashSet<Casa[]>();
-        GeraArrestas();
+            //Debug.Log("Cavalo " + cavalo);
+            //Debug.Log("Saida " + saida);
 
-        //Debug.Log("Cavalo " + cavalo);
-        //Debug.Log("Saida " + saida);
-
-        CaminhamentoLargura(nodos[(int)cavalo.z, (int)cavalo.x], nodos[(int)saida.z, (int)saida.x]);
-        Debug.Log("resultado " + nodos[(int)saida.z, (int)saida.x].getDist());
+            caminhamentoLargura(nodos[(int)cavalo.z, (int)cavalo.x], nodos[(int)saida.z, (int)saida.x]);
+            sw.Stop();
+            UnityEngine.Debug.Log("resultado " + nodos[(int)saida.z, (int)saida.x].getDist() + " em " + sw.Elapsed + " para o test " + test);
+        }
+       
 
     }
 
@@ -39,44 +47,30 @@ public class Controller : MonoBehaviour
         // gera o tabuleiro passando as posições como coordenadas
         //casas = new Casa[linhas[0].Length * linhas.Length];
         this.nodos = new Casa[linhas.Length, linhas[0].Length]; // acabei fazendo
-
+        char tipo;
         // create casas
         for (int x = 0; x < linhas[0].Length; x++)
         {
             for (int z = 0; z < linhas.Length; z++)
             {
-                Casa c = new Casa(new Vector3(x, 0, z), linhas[z][x]);
+                Vector3 pos = new Vector3(x, 0, z);
+                tipo = linhas[z][x];
+                if (tipo == 'C')
+                {
+                    cavalo = pos;
+                }
+                else if (tipo == 'S')
+                {
+                    saida = pos;
+                }
+                Casa c = new Casa(pos, tipo);
                 nodos[z, x] = c;
-                CreateCubes(new Vector3(x, 0, z), linhas[z][x]);
 
             }
         }
     }
 
-    private void CreateCubes(Vector3 pos, char tipo)
-    {
-        GameObject cubo = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        cubo.transform.position = pos;
-        cubo.transform.parent = this.transform;
 
-        if (tipo == 'x')
-            cubo.GetComponentInChildren<Renderer>().material.color = Color.red;
-        else if (tipo == 'C')
-        {
-            cubo.GetComponentInChildren<Renderer>().material.color = Color.black;
-            cavalo = pos;
-        } else if (tipo == 'S')
-        {
-            cubo.GetComponentInChildren<Renderer>().material.color = Color.green;
-            saida = pos;
-        } else
-        {
-            cubo.GetComponentInChildren<Renderer>().material.color = Color.white;
-        }
-
-        nodos[(int)pos.z, (int)pos.x].setCubo(cubo);
-
-    }
 
     /*
     * Cada casa deve apontar para o equivalente aos "A"s 
@@ -178,13 +172,13 @@ public class Controller : MonoBehaviour
 
                 //verificar se é x
 
-                
+
                 if (nodos[z, x].getTipo() != 'x')
                 {
                     Casa temp = nodos[doisCima, umEsq];
                     if (temp.getTipo() != 'x')
                     {
-                        arrestas.Add(new Casa[] { nodos[z, x] , nodos[doisCima, umEsq] });
+                        arrestas.Add(new Casa[] { nodos[z, x], nodos[doisCima, umEsq] });
                     }
 
                     temp = nodos[umCima, doisEsq];
@@ -237,13 +231,13 @@ public class Controller : MonoBehaviour
     {
         if (casaInicial == casaFinal)
         {  // nao ocorre
-            Debug.Log("distancia" + casaFinal.getDist());
+            UnityEngine.Debug.Log("distancia" + casaFinal.getDist());
             return true;
         }
 
         casasConhecida.Add(casaInicial);    // adiciona na lista
         casaInicial.jaConheco();
-        
+
 
         foreach (Casa casa in nodos)
         {
@@ -252,7 +246,7 @@ public class Controller : MonoBehaviour
                 if (existeArresta(casaInicial, casa))
                 {
                     casa.setDist(casaInicial.getDist() + 1);
-                    Debug.Log("" + casaInicial.getPos() + " dist " + casaFinal.getDist() + " | "+ casaFinal.getPos() );
+                    //Debug.Log("" + casaInicial.getPos() + " dist " + casaFinal.getDist() + " | " + casaFinal.getPos());
                     if (caminhamento(casa, casaFinal, casasConhecida))
                     {
                         return true;
@@ -264,47 +258,39 @@ public class Controller : MonoBehaviour
         return false;
     }
 
-    private void CaminhamentoLargura(Casa casaInicial, Casa casaFinal)
+    private void caminhamentoLargura(Casa casaInicial, Casa casaFinal)
     {
         //foreach(Casa c in nodos) c.setDist(99999);    Definido na criação do objeto
         casaInicial.setDist(0);
 
         List<Casa> queue = new List<Casa> { };
         queue.Add(casaInicial);
-        StartCoroutine(Coroutine());
 
         Casa casaAtual = casaInicial;
-        while(!equalNode(casaFinal, casaAtual) & queue.Count > 0){
+        while (!equalNode(casaFinal, casaAtual) & queue.Count > 0)
+        {
             casaAtual = queue[0];
             queue.RemoveAt(0);
 
-            foreach (Casa v in nodos) 
+            foreach (Casa v in nodos)
             {
                 if (existeArresta(casaAtual, v)) // para cada arresta adjacente
                 {
                     if (v.getCor().Equals("BRANCO"))
                     {
-                        StartCoroutine(Coroutine());
-                        v.descoberto(); //muda a cor para cinza
+                        v.setCor("CINZA"); //muda a cor para cinza
                         v.setDist(casaAtual.getDist() + 1);
                         v.setParent(casaAtual);
                         queue.Add(v);
-
                     }
                 }
             }
-            casaAtual.jaConheco(); //muda a cor para amarelo
+            casaAtual.setCor("AMARELO"); //muda a cor para amarelo
         }
-        if(queue.Count == 0)
+        if (queue.Count == 0)
         {
-            Debug.Log("Explorei todos nodos possiveis");
+            UnityEngine.Debug.Log("Não é possível sair");
         }
-    }
-
-    IEnumerator Coroutine()
-    {
-        //yield on a new YieldInstruction that waits for n seconds.
-        yield return new WaitForSeconds(.5f);
     }
 
 
