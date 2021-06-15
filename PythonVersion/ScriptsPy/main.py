@@ -1,8 +1,9 @@
 import numpy as np
+import time
 
 from casa import Casa
 
-testCases = [50] # 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550
+testCases = [0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550] # 
 horse = []
 exit = []
 nodos = []
@@ -106,6 +107,7 @@ def caminhamentoLargura(casaInicial, casaFinal):
 
 
 for test in testCases: #550
+    ini = time.time()
     horse = []
     exit = []
     nodos = []
@@ -115,9 +117,14 @@ for test in testCases: #550
     geraListaCasas(lines)
     geraArrestas()
 
-    print("horse \t",horse)
-    print("exit \t", exit)    
+    
+    med = time.time()
+    print("PARA O TESTE " , str(test))
+    print("tempo para gerar o grafo: " , (med-ini))
+  
 
     caminhamentoLargura(nodos[horse[0]][horse[1]], nodos[exit[0]][exit[1]])
-    print("resultado " + str(nodos[exit[0]][exit[1]].getDist()) , " em "  , " para o test " , str(test))
-    
+    final = time.time()
+    print("resultado " + str(nodos[exit[0]][exit[1]].getDist()))
+    print("tempo do caminhamento: " , (final-med))
+    print("Tempo total: " , (final-ini), "\n\n")
