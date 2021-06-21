@@ -4,6 +4,7 @@ class Casa:
     _tipo = ""
     _dist = 99999
     _cor = "BRANCO"
+    _arrestas = [] # armazena as posições que fazem par com esse nodo
 
 
     def __init__(self, pos, tipo):
@@ -28,11 +29,20 @@ class Casa:
     def getDist(self):
         return self._dist
 
+    def getArrestas(self):
+        return self._arrestas
+
     def setCor(self, cor):
         self._cor = cor
 
     def setDist(self, dist):
         self._dist = dist
+
+    def startArrestas(self):
+        self._arrestas.clear()
+
+    def addArrestas(self, arresta):
+        self._arrestas.append(arresta)
 
     def __str__(self):
         return str(self._pos) + " " + str(self._tipo)

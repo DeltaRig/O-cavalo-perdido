@@ -3,7 +3,7 @@ import time
 
 from casa import Casa
 
-testCases = [0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550] # 
+testCases = [50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550] # 
 horse = []
 exit = []
 nodos = []
@@ -30,58 +30,48 @@ def geraListaCasas(lines):
         nodos.append(colunas)
         countLine += 1
 
-def geraArrestas():
+def geraArrestas(c):
     moviments = ((2, 1), (1,2), (2,-1), (1,-2), (-1, 2), (-2,1), (-2,-1), (-1,-2))
 
+    c.startArrestas()
     #print(len(nodos))
     #print(len(nodos[0]))
 
-    for casas in nodos:
-        for c in casas:
-            if c.getTipo() != 'x':
-                for mov in moviments:
-                    x = c.getX() + mov[0]
-                    y = c.getY() + mov[1]
+    if c.getTipo() != 'x':
+        for mov in moviments:
+            x = c.getX() + mov[0]
+            y = c.getY() + mov[1]
 
-                    if(x >= len(nodos)):
-                        if(x == len(nodos)):
-                            x = 0
-                        elif(x == len(nodos) + 1):
-                            x = 1
-                    elif(x < 0):
-                        if(x == -1):
-                            x = len(nodos)-1
-                        elif(x == -2):
-                            x = len(nodos)-2
-                    if(y >= len(nodos[0])):
-                        if(y == len(nodos[0])):
-                            y = 0
-                        if(y == len(nodos[0]) + 1):
-                            y = 1
-                    elif(y < 0):
-                        if(y == -1):
-                            y = len(nodos[0])-1
-                        elif(y == -2):
-                            y = len(nodos[0])-2
-                    
-                    #print("c: ", c.getX(), c.getY() , "\tpos: " , x , y)
-                    if(nodos[x][y].getTipo() != 'x'):
-                        arestas.add((c, nodos[x][y]))
+            if(x >= len(nodos)):
+                if(x == len(nodos)):
+                    x = 0
+                elif(x == len(nodos) + 1):
+                    x = 1
+            elif(x < 0):
+                if(x == -1):
+                    x = len(nodos)-1
+                elif(x == -2):
+                    x = len(nodos)-2
+            if(y >= len(nodos[0])):
+                if(y == len(nodos[0])):
+                    y = 0
+                if(y == len(nodos[0]) + 1):
+                    y = 1
+            elif(y < 0):
+                if(y == -1):
+                    y = len(nodos[0])-1
+                elif(y == -2):
+                    y = len(nodos[0])-2
+            
+            #print("c: ", c.getX(), c.getY() , "\tpos: " , x , y)
+            if(nodos[x][y].getTipo() != 'x'):
+                c.addArrestas([x,y])
 
 def equalNode(casa, c):
     if(casa.getX() == c.getX()):
         if(casa.getY() == c.getY()):
             return True
     return False
-
-def existEdge(casaAtual, v):
-    count = 0
-    for a in arestas:
-        count += 1
-        if equalNode(a[0], casaAtual):
-            if equalNode(a[1], v):
-                return count
-    return -1
 
 def caminhamentoLargura(casaInicial, casaFinal):
     casaInicial.setDist(0)
@@ -91,24 +81,23 @@ def caminhamentoLargura(casaInicial, casaFinal):
     while (len(queue) > 0):
         casaAtual = queue[0]
         queue.pop(0)
-        for casas in nodos:
-            for v in casas:
-                if v.getTipo() != 'x':
-                    temp = existEdge(casaAtual, v)
-                else:
-                    temp = -1
-                if temp != -1 :
-                    arestas.discard(temp)
-                    if v.getCor() == "BRANCO" :
-                        v.setDist(casaAtual.getDist() + 1)
-                        if equalNode(casaFinal, casaAtual):
-                            return
-                        v.setCor("CINZA"); 
-                        queue.append(v)
-                        #print(v)
-                
+
+        geraArrestas(casaAtual)
+        #print(casaAtual.getArrestas() , "\n\n")
+        
+        for arrestaPar in casaAtual.getArrestas():
+            tempPar = nodos[arrestaPar[0]][arrestaPar[1]]
+            
+            if tempPar.getCor() == "BRANCO" :
+                tempPar.setDist(casaAtual.getDist() + 1)
+                if equalNode(casaFinal, casaAtual):
+                    return
+                tempPar.setCor("CINZA"); 
+                queue.append(tempPar)
+                #print(arresta)
+                    
         casaAtual.setCor("AMARELO")
-    
+        
     if (len(queue) == 0):
         print("Não é possível sair")
 
@@ -124,12 +113,10 @@ for test in testCases: #550
     file_name = ".\Casos\caso" + str(test) + ".txt"
     lines = open(file_name,'r')
     geraListaCasas(lines)
-    geraArrestas()
 
     
     med = time.time()
     print("PARA O TESTE " , str(test))
-    print("tempo para gerar o grafo: " , (med-ini))
   
 
     caminhamentoLargura(nodos[horse[0]][horse[1]], nodos[exit[0]][exit[1]])
