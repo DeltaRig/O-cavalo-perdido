@@ -99,7 +99,7 @@ def caminhamentoLargura(casaInicial, casaFinal):
         casaAtual.setCor("AMARELO")
         
     if (len(queue) == 0):
-        print("Não é possível sair")
+        print("Explorei todos nodos possiveis")
 
 
 

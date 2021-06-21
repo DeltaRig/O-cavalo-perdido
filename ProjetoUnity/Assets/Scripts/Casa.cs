@@ -9,8 +9,8 @@ public class Casa
     private char tipo; // . C x S
     protected GameObject cubo;
     private int dist;
-    private Casa parent;
     private string cor;
+    private List<int[]> arrestas;
 
     /*
      * Cada casa deve apontar para o equivalente aos "A"s 
@@ -28,8 +28,8 @@ public class Casa
         this.tipo = tipo;
         this.pos = pos;
         this.dist = 99999;
-        this.parent = null;
         this.cor = "BRANCO";
+        this.arrestas = new List<int[]>();
     }
 
     public Vector3 getPos()
@@ -62,10 +62,16 @@ public class Casa
         return cor;
     }
 
-    public void setParent(Casa parent)
+    public List<int[]> getArrestas()
     {
-        this.parent = parent;
+        return arrestas;
     }
+
+    public void addArresta(int[] arresta)
+    {
+        this.arrestas.Add(arresta);
+    }
+
 
     public void jaConheco()
     {

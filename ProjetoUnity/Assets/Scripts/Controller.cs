@@ -23,10 +23,12 @@ public class Controller : MonoBehaviour
         this.linhas = System.IO.File.ReadAllLines(@".\Assets\Casos\caso50.txt");
         GeraListaCasas();
         arrestas = new HashSet<Casa[]>();
-        GeraArrestas();
+        //GeraArrestas();
 
         //Debug.Log("Cavalo " + cavalo);
         //Debug.Log("Saida " + saida);
+        Debug.Log("linhas " + linhas.Length);
+        Debug.Log("colunas " + linhas[0].Length);
 
         StartCoroutine(CaminhamentoLargura(nodos[(int)cavalo.z, (int)cavalo.x], nodos[(int)saida.z, (int)saida.x]));
         
@@ -87,205 +89,200 @@ public class Controller : MonoBehaviour
     * . . A . A . . doisBaixo
     */
 
-    private void GeraArrestasS()
+    private void GeraArrestas(Casa casaAtual)
     {
-        int[,] mov = new int[,] { { 2, 1 }, { 1, 2 }, { 2, -1 }, { 1, -2 }, { -1, 2 }, { -2, 1 }, { -2, -1 }, { -1, -2 } };
-
-        for (int x = 0; x < linhas[0].Length; x++) // x = colunas
-        {
-            for (int z = 0; z < linhas.Length; z++)
+        int[][] mov = 
             {
-                if (nodos[z, x].getTipo() != 'x')
-                    for(int i = 0; i < mov.Length; i++)
-                    {
-                        int horizontal = (int) nodos[z, x].getPos().x + mov[i,0];
-                        int vertical = (int) nodos[z, x].getPos().z + mov[i,1];
+            new int[] { 2, 1 }, new int[] { 1, 2 }, new int[] { 2, -1 }, new int[] { 1, -2 },
+            new int[] { -1, 2 }, new int[] { -2, 1 }, new int[] { -2, -1 }, new int[] { -1, -2 } };
 
-                        if (horizontal >= nodos.Length)
-                        {
-                            if (horizontal == nodos.Length)
-                                horizontal = 0;
-                            else if (horizontal == nodos.Length + 1)
-                                horizontal = 1;
-                        }
-                        else if (horizontal < 0)
-                        {
-                            if (horizontal == -1)
-                                horizontal = nodos.Length - 1;
-                            else if (horizontal == -2)
-                                horizontal = nodos.Length - 2;
-                        }
-                        if (vertical >= linhas[0].Length)
-                        {
-                            if (vertical == linhas[0].Length)
-                                vertical = 0;
-                            else if (vertical == linhas[0].Length + 1)
-                                vertical = 1;
-                        }
-                        else if (vertical < 0)
-                        {
-                            if (vertical == -1)
-                                vertical = linhas[0].Length - 1;
-                            else if (vertical == -2)
-                                vertical = linhas[0].Length - 2;
-                        }
+        if (casaAtual.getTipo() != 'x')
+            for(int i = 0; i < mov.Length; i++)
+            {
+                Debug.Log(casaAtual);
+                Debug.Log(mov[i][0]);
+                int horizontal = (int) casaAtual.getPos().x + mov[i][0];
+                int vertical = (int) casaAtual.getPos().z + mov[i][1];
 
-                        Debug.Log("vert " + vertical + "hor " + horizontal);
+                if (horizontal >= linhas.Length)
+                {
+                    if (horizontal == linhas.Length)
+                        horizontal = 0;
+                    else if (horizontal == linhas.Length + 1)
+                        horizontal = 1;
+                }
+                else if (horizontal < 0)
+                {
+                    if (horizontal == -1)
+                        horizontal = linhas.Length - 1;
+                    else if (horizontal == -2)
+                        horizontal = linhas.Length - 2;
+                }
+                if (vertical >= linhas[0].Length)
+                {
+                    if (vertical == linhas[0].Length)
+                        vertical = 0;
+                    else if (vertical == linhas[0].Length + 1)
+                        vertical = 1;
+                }
+                else if (vertical < 0)
+                {
+                    if (vertical == -1)
+                        vertical = linhas[0].Length - 1;
+                    else if (vertical == -2)
+                        vertical = linhas[0].Length - 2;
+                }
 
-                        if (nodos[vertical, horizontal].getTipo() != 'x')
-                        {
-                            arrestas.Add(new Casa[] { nodos[z, x], nodos[vertical, horizontal] });
-                        }
-                    }
-
+                //Debug.Log("vert " + vertical + "hor " + horizontal);
+                Debug.Log("V " + vertical + " H " + horizontal);
+                if (nodos[horizontal, vertical].getTipo() != 'x')
+                {
+                    arrestas.Add(new Casa[] { casaAtual, nodos[horizontal, vertical] });
+                }
             }
-        }
+            
     }
 
-    private void GeraArrestas()
+    private void GeraArrestasS(Casa casaAtual)
     {
-        for (int x = 0; x < linhas[0].Length; x++) // x = colunas
+
+        int x = (int) casaAtual.getPos().x;
+        int z = (int)casaAtual.getPos().z;
+
+        int doisDir = x + 2;
+        int umDir = x + 1;
+        if (doisDir >= linhas[0].Length) // 0 - 9 // 9+2=11 8+2=10
         {
-
-
-            int doisDir = x + 2;
-            int umDir = x + 1;
-            if (doisDir >= linhas[0].Length) // 0 - 9 // 9+2=11 8+2=10
+            if (doisDir == linhas[0].Length) // 10 dois=10     9 0
             {
-                if (doisDir == linhas[0].Length) // 10 dois=10     9 0
-                {
-                    doisDir = 0;
-                }
-                else if (doisDir == linhas[0].Length + 1)   // 11
-                {
-                    doisDir = 1;        // 11 -> 1
-                    umDir = 0;          // 10 -> 0
-                }
+                doisDir = 0;
             }
-
-            int doisEsq = x - 2;
-            int umEsq = x - 1;
-            if (doisEsq < 0)
+            else if (doisDir == linhas[0].Length + 1)   // 11
             {
-                if (doisEsq == 0)
-                {
-                    umEsq = linhas[0].Length - 1;
-                }
-                else if (doisEsq == -1)
-                {
-                    doisEsq = linhas[0].Length - 1;
-                }
-                else if (doisEsq == -2)
-                {
-                    doisEsq = linhas[0].Length - 2;
-                    umEsq = linhas[0].Length - 1;
-                }
+                doisDir = 1;        // 11 -> 1
+                umDir = 0;          // 10 -> 0
             }
+        }
 
-            //Debug.Log(x + "\nDoisEsq: " + doisEsq + "\tUmCima: " + umEsq
-            //    + "\nDoisDir: " + doisDir + "\tUmDir: " + umDir);
-
-            for (int z = 0; z < linhas.Length; z++)
+        int doisEsq = x - 2;
+        int umEsq = x - 1;
+        if (doisEsq < 0)
+        {
+            if (doisEsq == 0)
             {
+                umEsq = linhas[0].Length - 1;
+            }
+            else if (doisEsq == -1)
+            {
+                doisEsq = linhas[0].Length - 1;
+            }
+            else if (doisEsq == -2)
+            {
+                doisEsq = linhas[0].Length - 2;
+                umEsq = linhas[0].Length - 1;
+            }
+        }
 
-                int doisCima = z + 2;
-                int umCima = z + 1;
-                // z vai ate linhas.length - 1 
-                // linhas.length -1 +2 = l.l+1
-                if (doisCima >= linhas.Length)
-                {
-                    if (doisCima == linhas.Length)
-                    {
-                        doisCima = 0;
-                    }
-                    else if (doisCima == linhas.Length + 1)
-                    {
-                        doisCima = 1;
-                        umCima = 0;
-                    }
-                }
+        //Debug.Log(x + "\nDoisEsq: " + doisEsq + "\tUmCima: " + umEsq
+        //    + "\nDoisDir: " + doisDir + "\tUmDir: " + umDir);
 
-                int doisBaixo = z - 2;
-                int umBaixo = z - 1;
-                // z começa em 0
-                // 0 -2 = -2
-                if (doisBaixo < 0)
-                {
-                    if (doisBaixo == 0)
-                    {
-                        umBaixo = linhas.Length - 1;
-                    }
-                    else if (doisBaixo == -1)
-                    {
-                        doisBaixo = linhas.Length - 1;
-                    }
-                    else if (doisBaixo == -2)
-                    {
-                        doisBaixo = linhas.Length - 2;
-                        umBaixo = linhas.Length - 1;
-                    }
-                }
+        int doisCima = z + 2;
+        int umCima = z + 1;
+        // z vai ate linhas.length - 1 
+        // linhas.length -1 +2 = l.l+1
+        if (doisCima >= linhas.Length)
+        {
+            if (doisCima == linhas.Length)
+            {
+                doisCima = 0;
+            }
+            else if (doisCima == linhas.Length + 1)
+            {
+                doisCima = 1;
+                umCima = 0;
+            }
+        }
 
-                //Debug.Log(z + "\nDoisCima: " + doisCima + "\tUmCima: " + umCima
-                //    + "\nDoisBaixo: " + doisBaixo + "\tUmBaixo: " + umBaixo);
+        int doisBaixo = z - 2;
+        int umBaixo = z - 1;
+        // z começa em 0
+        // 0 -2 = -2
+        if (doisBaixo < 0)
+        {
+            if (doisBaixo == 0)
+            {
+                umBaixo = linhas.Length - 1;
+            }
+            else if (doisBaixo == -1)
+            {
+                doisBaixo = linhas.Length - 1;
+            }
+            else if (doisBaixo == -2)
+            {
+                doisBaixo = linhas.Length - 2;
+                umBaixo = linhas.Length - 1;
+            }
+        }
 
-                //verificar se é x
+        //Debug.Log(z + "\nDoisCima: " + doisCima + "\tUmCima: " + umCima
+        //    + "\nDoisBaixo: " + doisBaixo + "\tUmBaixo: " + umBaixo);
+
+        //verificar se é x
 
                 
-                if (nodos[z, x].getTipo() != 'x')
-                {
-                    Casa temp = nodos[doisCima, umEsq];
-                    if (temp.getTipo() != 'x')
-                    {
-                        arrestas.Add(new Casa[] { nodos[z, x] , nodos[doisCima, umEsq] });
-                    }
+        if (nodos[z, x].getTipo() != 'x')
+        {
+            Casa temp = nodos[doisCima, umEsq];
+            if (temp.getTipo() != 'x')
+            {
+                casaAtual.addArresta(new int[] {doisCima, umEsq});
+            }
 
-                    temp = nodos[umCima, doisEsq];
-                    if (temp.getTipo() != 'x')
-                    {
-                        arrestas.Add(new Casa[] { nodos[z, x], nodos[umCima, doisEsq] });
-                    }
+            temp = nodos[umCima, doisEsq];
+            if (temp.getTipo() != 'x')
+            {
+                casaAtual.addArresta(new int[] { umCima, doisEsq });
+            }
 
-                    temp = nodos[doisCima, umDir];
-                    if (temp.getTipo() != 'x')
-                    {
-                        arrestas.Add(new Casa[] { nodos[z, x], nodos[doisCima, umDir] });
-                    }
+            temp = nodos[doisCima, umDir];
+            if (temp.getTipo() != 'x')
+            {
+                casaAtual.addArresta(new int[] { doisCima, umDir});
+            }
 
-                    temp = nodos[umCima, doisDir];
-                    if (temp.getTipo() != 'x')
-                    {
-                        arrestas.Add(new Casa[] { nodos[z, x], nodos[umCima, doisDir] });
-                    }
+            temp = nodos[umCima, doisDir];
+            if (temp.getTipo() != 'x')
+            {
+                casaAtual.addArresta(new int[] { umCima, doisDir });
+            }
 
-                    temp = nodos[umBaixo, doisEsq];
-                    if (temp.getTipo() != 'x')
-                    {
-                        arrestas.Add(new Casa[] { nodos[z, x], nodos[umBaixo, doisEsq] });
-                    }
+            temp = nodos[umBaixo, doisEsq];
+            if (temp.getTipo() != 'x')
+            {
+                casaAtual.addArresta(new int[] { umBaixo, doisEsq });
+            }
 
-                    temp = nodos[doisBaixo, umEsq];
-                    if (temp.getTipo() != 'x')
-                    {
-                        arrestas.Add(new Casa[] { nodos[z, x], nodos[doisBaixo, umEsq] });
-                    }
+            temp = nodos[doisBaixo, umEsq];
+            if (temp.getTipo() != 'x')
+            {
+                casaAtual.addArresta(new int[] { doisBaixo, umEsq });
+            }
 
-                    temp = nodos[doisBaixo, umDir];
-                    if (temp.getTipo() != 'x')
-                    {
-                        arrestas.Add(new Casa[] { nodos[z, x], nodos[doisBaixo, umDir] });
-                    }
+            temp = nodos[doisBaixo, umDir];
+            if (temp.getTipo() != 'x')
+            {
+                casaAtual.addArresta(new int[] { doisBaixo, umDir });
+            }
 
-                    temp = nodos[umBaixo, doisDir];
-                    if (temp.getTipo() != 'x')
-                    {
-                        arrestas.Add(new Casa[] { nodos[z, x], nodos[umBaixo, doisDir] });
-                    }
-                }
+            temp = nodos[umBaixo, doisDir];
+            if (temp.getTipo() != 'x')
+            {
+                casaAtual.addArresta(new int[] { umBaixo, doisDir });
             }
         }
     }
 
+    // largura
     private Boolean caminhamento(Casa casaInicial, Casa casaFinal, List<Casa> casasConhecida)
     {
         if (casaInicial == casaFinal)
@@ -331,19 +328,17 @@ public class Controller : MonoBehaviour
             casaAtual = queue[0];
             queue.RemoveAt(0);
 
-            foreach (Casa v in nodos) 
+            GeraArrestasS(casaAtual);
+            foreach(int[] posArresta in casaAtual.getArrestas())
             {
-                if (existeArresta(casaAtual, v)) // para cada arresta adjacente
+                Casa par = nodos[posArresta[0], posArresta[1]];
+                if (par.getCor().Equals("BRANCO"))
                 {
-                    if (v.getCor().Equals("BRANCO"))
-                    {
-//                        yield return new WaitForSeconds(.0001f);
-                        v.fronteira(); //muda a cor para cinza
-                        v.setDist(casaAtual.getDist() + 1);
-                        v.setParent(casaAtual);
-                        queue.Add(v);
+                    //                        yield return new WaitForSeconds(.0001f);
+                    par.fronteira(); //muda a cor para cinza
+                    par.setDist(casaAtual.getDist() + 1);
+                    queue.Add(par);
 
-                    }
                 }
             }
             yield return new WaitForSeconds(.0000000000000001f);
