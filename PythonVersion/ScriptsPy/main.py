@@ -7,7 +7,7 @@ testCases = [0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550] #
 horse = []
 exit = []
 nodos = []
-arrestas = set()
+arestas = set()
 
 def geraListaCasas(lines):
     countLine = 0
@@ -66,7 +66,7 @@ def geraArrestas():
                     
                     #print("c: ", c.getX(), c.getY() , "\tpos: " , x , y)
                     if(nodos[x][y].getTipo() != 'x'):
-                        arrestas.add((c, nodos[x][y]))
+                        arestas.add((c, nodos[x][y]))
 
 def equalNode(casa, c):
     if(casa.getX() == c.getX()):
@@ -75,27 +75,35 @@ def equalNode(casa, c):
     return False
 
 def existEdge(casaAtual, v):
-    for a in arrestas:
+    count = 0
+    for a in arestas:
+        count += 1
         if equalNode(a[0], casaAtual):
             if equalNode(a[1], v):
-                return True
-    return False
+                return count
+    return -1
 
 def caminhamentoLargura(casaInicial, casaFinal):
     casaInicial.setDist(0)
     queue = []
     queue.append(casaInicial)
-    casaAtual = casaInicial
-    while (not equalNode(casaFinal, casaAtual)
-                                 and len(queue) > 0):
+    
+    while (len(queue) > 0):
         casaAtual = queue[0]
         queue.pop(0)
         for casas in nodos:
             for v in casas:
-                if existEdge(casaAtual, v) :
+                if v.getTipo() != 'x':
+                    temp = existEdge(casaAtual, v)
+                else:
+                    temp = -1
+                if temp != -1 :
+                    arestas.discard(temp)
                     if v.getCor() == "BRANCO" :
-                        v.setCor("CINZA"); 
                         v.setDist(casaAtual.getDist() + 1)
+                        if equalNode(casaFinal, casaAtual):
+                            return
+                        v.setCor("CINZA"); 
                         queue.append(v)
                         #print(v)
                 
@@ -106,12 +114,13 @@ def caminhamentoLargura(casaInicial, casaFinal):
 
 
 
+
 for test in testCases: #550
     ini = time.time()
     horse = []
     exit = []
     nodos = []
-    arrestas = set()
+    arestas = set()
     file_name = ".\Casos\caso" + str(test) + ".txt"
     lines = open(file_name,'r')
     geraListaCasas(lines)

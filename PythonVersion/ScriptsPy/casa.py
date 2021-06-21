@@ -16,6 +16,9 @@ class Casa:
     def getY(self):
         return self._pos[1]
 
+    def getPos(self):
+        return self._pos
+
     def getTipo(self):
         return self._tipo
 

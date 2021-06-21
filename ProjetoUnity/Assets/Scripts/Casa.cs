@@ -70,13 +70,13 @@ public class Casa
     public void jaConheco()
     {
         cubo.GetComponentInChildren<Renderer>().material.color = Color.black;
-        this.cor = "AZUL";
+        this.cor = "PRETO";
     }
 
     public void fronteira()
     {
         cubo.GetComponentInChildren<Renderer>().material.color = Color.cyan;
-        this.cor = "CINZA";
+        this.cor = "AZUL";
     }
 
     public void setCor(string cor)  //para usar no optimize

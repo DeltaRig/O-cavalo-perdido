@@ -20,7 +20,7 @@ public class Controller : MonoBehaviour
     void Start()
     {
 
-        this.linhas = System.IO.File.ReadAllLines(@".\Assets\Casos\caso0.txt");
+        this.linhas = System.IO.File.ReadAllLines(@".\Assets\Casos\caso50.txt");
         GeraListaCasas();
         arrestas = new HashSet<Casa[]>();
         GeraArrestas();
