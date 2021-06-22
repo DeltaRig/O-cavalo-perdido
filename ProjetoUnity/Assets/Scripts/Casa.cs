@@ -11,6 +11,7 @@ public class Casa
     private int dist;
     private string cor;
     private List<int[]> arrestas;
+    private Casa filho;
 
     /*
      * Cada casa deve apontar para o equivalente aos "A"s 
@@ -30,6 +31,7 @@ public class Casa
         this.dist = 99999;
         this.cor = "BRANCO";
         this.arrestas = new List<int[]>();
+        
     }
 
     public Vector3 getPos()
@@ -90,6 +92,20 @@ public class Casa
         this.cor = cor;
     }
 
+    public void setFilho(Casa filho)  //para usar no optimize
+    {
+        this.filho = filho;
+    }
+
+    public Casa getFilho()
+    {
+        return filho;
+    }
+
+    public void caminhho()
+    {
+        cubo.GetComponentInChildren<Renderer>().material.color = Color.green;
+    }
 
     public override string ToString()
     {

@@ -20,15 +20,15 @@ public class Controller : MonoBehaviour
     void Start()
     {
 
-        this.linhas = System.IO.File.ReadAllLines(@".\Assets\Casos\caso50.txt");
+        this.linhas = System.IO.File.ReadAllLines(@".\Assets\Casos\caso100.txt");
         GeraListaCasas();
         arrestas = new HashSet<Casa[]>();
         //GeraArrestas();
 
         //Debug.Log("Cavalo " + cavalo);
         //Debug.Log("Saida " + saida);
-        Debug.Log("linhas " + linhas.Length);
-        Debug.Log("colunas " + linhas[0].Length);
+        //Debug.Log("linhas " + linhas.Length);
+        //Debug.Log("colunas " + linhas[0].Length);
 
         StartCoroutine(CaminhamentoLargura(nodos[(int)cavalo.z, (int)cavalo.x], nodos[(int)saida.z, (int)saida.x]));
         
@@ -338,11 +338,12 @@ public class Controller : MonoBehaviour
                     par.fronteira(); //muda a cor para cinza
                     par.setDist(casaAtual.getDist() + 1);
                     queue.Add(par);
+                    par.setFilho(casaAtual);
 
                 }
             }
             yield return new WaitForSeconds(.0000000000000001f);
-            casaAtual.jaConheco(); //muda a cor para amarelo
+            casaAtual.jaConheco(); //muda a cor para preto
         }
         Debug.Log("resultado " + nodos[(int)saida.z, (int)saida.x].getDist());
         if (queue.Count == 0)
@@ -351,6 +352,16 @@ public class Controller : MonoBehaviour
         }
 
         yield return new WaitForSeconds(.0000000000000000000001f);
+
+        casaAtual = nodos[(int)saida.z, (int)saida.x];
+        casaAtual.caminhho();
+        while (!equalNode(nodos[(int)cavalo.z, (int)cavalo.x], casaAtual))
+        {
+            casaAtual = casaAtual.getFilho();
+            casaAtual.caminhho();
+
+
+        }
 
     }
 
